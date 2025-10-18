@@ -102,25 +102,25 @@ func getIconStyle(percent int) lipgloss.Style {
 
 	switch {
 	case percent <= 10:
-		icon = "●"
+		icon = "🔅"
 		color = lipgloss.Color("#2C2C2C") // Dark gray
 	case percent <= 25:
-		icon = "●"
+		icon = "🔅"
 		color = lipgloss.Color("#4A4A4A")
 	case percent <= 40:
-		icon = "●"
+		icon = "🔅"
 		color = lipgloss.Color("#666666")
 	case percent <= 55:
-		icon = "●"
+		icon = "🔅"
 		color = lipgloss.Color("#888888")
 	case percent <= 70:
-		icon = "●"
+		icon = "🔅"
 		color = lipgloss.Color("#CCCCCC") // Light gray
 	case percent <= 85:
-		icon = "●"
+		icon = "🔆"
 		color = lipgloss.Color("#FFD700") // Gold
 	default:
-		icon = "●"
+		icon = "🔆"
 		color = lipgloss.Color("#FFFF00") // Yellow
 	}
 
