@@ -16,18 +16,10 @@ var (
 	emptyColor   = lipgloss.Color("#1A1A1A")
 	textColor    = lipgloss.Color("#FFFFFF")
 	helpColor    = lipgloss.Color("#AAAAAA")
-	titleStyle = lipgloss.NewStyle().
+	titleStyle   = lipgloss.NewStyle().
 			Bold(true).
 			Foreground(textColor).
 			MarginBottom(1)
-
-	iconStyle = lipgloss.NewStyle().
-			Foreground(primaryColor).
-			Bold(true).
-			SetString("󰖨").
-			MarginBottom(1)
-
-
 
 	filledStyle = lipgloss.NewStyle().
 			Foreground(primaryColor).
@@ -59,7 +51,6 @@ var (
 			Padding(2, 4).
 			Align(lipgloss.Center)
 )
-
 
 type model struct {
 	brightness int
@@ -108,6 +99,42 @@ func getBrightness() (int, int) {
 	return brightness, max
 }
 
+func getIconStyle(percent int) lipgloss.Style {
+	var icon string
+	var color lipgloss.Color
+
+	switch {
+	case percent <= 10:
+		icon = "🌑"                        // New moon
+		color = lipgloss.Color("#2C2C2C") // Dark gray
+	case percent <= 25:
+		icon = "🌒" // Waxing crescent
+		color = lipgloss.Color("#4A4A4A")
+	case percent <= 40:
+		icon = "🌓" // First quarter
+		color = lipgloss.Color("#666666")
+	case percent <= 55:
+		icon = "🌔" // Waxing gibbous
+		color = lipgloss.Color("#888888")
+	case percent <= 70:
+		icon = "🌕"                        // Full moon
+		color = lipgloss.Color("#CCCCCC") // Light gray
+	case percent <= 85:
+		icon = "🌞"                        // Sun with face
+		color = lipgloss.Color("#FFD700") // Gold
+	default:
+		icon = "☀️"                       // Full sun
+		color = lipgloss.Color("#FFFF00") // Yellow
+	}
+
+	return lipgloss.NewStyle().
+		Foreground(color).
+		Bold(true).
+		SetString(icon).
+		MarginBottom(1).
+		Padding(0, 1)
+}
+
 func setBrightness(percent int) error {
 	cmd := exec.Command("brightnessctl", "set", fmt.Sprintf("%d%%", percent))
 	if err := cmd.Run(); err != nil {
@@ -116,7 +143,6 @@ func setBrightness(percent int) error {
 	}
 	return nil
 }
-
 
 func (m model) Init() tea.Cmd {
 	return nil
@@ -186,7 +212,7 @@ func (m model) View() string {
 	empty := barWidth - filled
 
 	title := titleStyle.Render("Screen Brightness")
-	icon := iconStyle.String()
+	icon := getIconStyle(percent).String()
 
 	header := lipgloss.JoinHorizontal(lipgloss.Center, icon, " ", title)
 	bar := ""
@@ -198,7 +224,6 @@ func (m model) View() string {
 	}
 
 	percentText := percentStyle.Render(fmt.Sprintf("%d%%", percent))
-
 
 	brightnessControl := lipgloss.JoinVertical(
 		lipgloss.Center,
@@ -218,7 +243,6 @@ func (m model) View() string {
 	)
 
 	styledContent := containerStyle.Render(content)
-
 
 	return lipgloss.Place(
 		m.width,
