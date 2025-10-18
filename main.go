@@ -18,8 +18,7 @@ var (
 	helpColor    = lipgloss.Color("#AAAAAA")
 	titleStyle   = lipgloss.NewStyle().
 			Bold(true).
-			Foreground(textColor).
-			MarginBottom(1)
+			Foreground(textColor)
 
 	filledStyle = lipgloss.NewStyle().
 			Foreground(primaryColor).
@@ -41,10 +40,8 @@ var (
 			Align(lipgloss.Center)
 
 	mainBoxStyle = lipgloss.NewStyle().
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(primaryColor).
 			Padding(1, 3).
-			Width(60).
+			Width(80).
 			Align(lipgloss.Center)
 
 	containerStyle = lipgloss.NewStyle().
@@ -105,25 +102,25 @@ func getIconStyle(percent int) lipgloss.Style {
 
 	switch {
 	case percent <= 10:
-		icon = "🌑"                        // New moon
+		icon = "●"
 		color = lipgloss.Color("#2C2C2C") // Dark gray
 	case percent <= 25:
-		icon = "🌒" // Waxing crescent
+		icon = "●"
 		color = lipgloss.Color("#4A4A4A")
 	case percent <= 40:
-		icon = "🌓" // First quarter
+		icon = "●"
 		color = lipgloss.Color("#666666")
 	case percent <= 55:
-		icon = "🌔" // Waxing gibbous
+		icon = "●"
 		color = lipgloss.Color("#888888")
 	case percent <= 70:
-		icon = "🌕"                        // Full moon
+		icon = "●"
 		color = lipgloss.Color("#CCCCCC") // Light gray
 	case percent <= 85:
-		icon = "🌞"                        // Sun with face
+		icon = "●"
 		color = lipgloss.Color("#FFD700") // Gold
 	default:
-		icon = "☀️"                       // Full sun
+		icon = "●"
 		color = lipgloss.Color("#FFFF00") // Yellow
 	}
 
@@ -131,8 +128,7 @@ func getIconStyle(percent int) lipgloss.Style {
 		Foreground(color).
 		Bold(true).
 		SetString(icon).
-		MarginBottom(1).
-		Padding(0, 1)
+		Padding(1, 2)
 }
 
 func setBrightness(percent int) error {
@@ -207,7 +203,7 @@ func (m model) View() string {
 	if m.max > 0 {
 		percent = (m.brightness * 100) / m.max
 	}
-	barWidth := 50
+	barWidth := 70
 	filled := (percent * barWidth) / 100
 	empty := barWidth - filled
 
