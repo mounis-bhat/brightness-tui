@@ -12,40 +12,54 @@ import (
 )
 
 var (
+	primaryColor = lipgloss.Color("#00FFFF")
+	emptyColor   = lipgloss.Color("#1A1A1A")
+	textColor    = lipgloss.Color("#FFFFFF")
+	helpColor    = lipgloss.Color("#AAAAAA")
+	titleStyle = lipgloss.NewStyle().
+			Bold(true).
+			Foreground(textColor).
+			MarginBottom(1)
+
+	iconStyle = lipgloss.NewStyle().
+			Foreground(primaryColor).
+			Bold(true).
+			SetString("󰖨").
+			MarginBottom(1)
+
+
+
 	filledStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#7D56F4")).
-			Background(lipgloss.Color("#7D56F4"))
+			Foreground(primaryColor).
+			Background(primaryColor)
 
 	emptyStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#3C3C3C")).
-			Background(lipgloss.Color("#3C3C3C"))
+			Foreground(emptyColor).
+			Background(emptyColor)
 
 	percentStyle = lipgloss.NewStyle().
 			Bold(true).
-			Foreground(lipgloss.Color("#FAFAFA")).
+			Foreground(textColor).
 			MarginTop(1).
 			MarginBottom(1)
 
 	helpStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#626262")).
+			Foreground(helpColor).
 			MarginTop(2).
 			Align(lipgloss.Center)
 
-	brightIconStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#FFD700")).
-			Bold(true)
-
-	fadedIconStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#3C3C3C"))
-
-	iconContainerStyle = lipgloss.NewStyle().
-				Align(lipgloss.Center).
-				MarginBottom(2)
+	mainBoxStyle = lipgloss.NewStyle().
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(primaryColor).
+			Padding(1, 3).
+			Width(60).
+			Align(lipgloss.Center)
 
 	containerStyle = lipgloss.NewStyle().
 			Padding(2, 4).
 			Align(lipgloss.Center)
 )
+
 
 type model struct {
 	brightness int
@@ -103,25 +117,6 @@ func setBrightness(percent int) error {
 	return nil
 }
 
-func getBrightnessIcon(percent int) string {
-	icons := []string{"󱩎", "󱩏", "󱩐", "󱩑", "󱩒", "󱩓", "󱩔", "󱩕", "󱩖", "󰛨"}
-
-	activeIndex := percent / 10
-	if activeIndex >= len(icons) {
-		activeIndex = len(icons) - 1
-	}
-
-	var result []string
-	for i, icon := range icons {
-		if i <= activeIndex {
-			result = append(result, brightIconStyle.Render(icon))
-		} else {
-			result = append(result, fadedIconStyle.Render(icon))
-		}
-	}
-
-	return strings.Join(result, " ")
-}
 
 func (m model) Init() tea.Cmd {
 	return nil
@@ -186,13 +181,14 @@ func (m model) View() string {
 	if m.max > 0 {
 		percent = (m.brightness * 100) / m.max
 	}
-
-	icon := iconContainerStyle.Render(getBrightnessIcon(percent))
-
 	barWidth := 50
 	filled := (percent * barWidth) / 100
 	empty := barWidth - filled
 
+	title := titleStyle.Render("Screen Brightness")
+	icon := iconStyle.String()
+
+	header := lipgloss.JoinHorizontal(lipgloss.Center, icon, " ", title)
 	bar := ""
 	for i := 0; i < filled; i++ {
 		bar += filledStyle.Render("█")
@@ -203,25 +199,26 @@ func (m model) View() string {
 
 	percentText := percentStyle.Render(fmt.Sprintf("%d%%", percent))
 
+
 	brightnessControl := lipgloss.JoinVertical(
 		lipgloss.Center,
+		header,
 		bar,
 		percentText,
 	)
+
+	mainContent := mainBoxStyle.Render(brightnessControl)
 
 	help := helpStyle.Render("↑/↓: ±5%  •  1-9: 10%-90%  •  0: 100%  •  q/esc: quit")
 
 	content := lipgloss.JoinVertical(
 		lipgloss.Center,
-		"",
-		icon,
-		"",
-		brightnessControl,
-		"",
+		mainContent,
 		help,
 	)
 
-	styledContent := containerStyle.Width(70).Render(content)
+	styledContent := containerStyle.Render(content)
+
 
 	return lipgloss.Place(
 		m.width,
@@ -230,6 +227,7 @@ func (m model) View() string {
 		lipgloss.Center,
 		styledContent,
 	)
+
 }
 
 func main() {
